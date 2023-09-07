@@ -1,7 +1,16 @@
 import { ConnectWallet } from "@thirdweb-dev/react";
 import "./styles/Home.css";
+import { useEffect } from "react";
+import { ZKPCompareNumbers } from "./ZKPCompareNumbers";
 
 export default function Home() {
+
+  useEffect( () => {
+    ZKPCompareNumbers( 1, 2 ).then( ( res ) => {
+      console.log( res );
+    } );
+  }, [] );
+
   return (
     <main className="main">
       <div className="container">
