@@ -21,9 +21,9 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import "hardhat/console.sol";
+import "./interfaces/IVerifier.sol";
 
-contract PlonkVerifier {
+contract PlonkVerifier is IPlonkVerifier {
     // Omega
     uint256 constant w1 = 19540430494807482326159819597004422086093766032135589407132600596362845576832;    
     // Scalar field size
