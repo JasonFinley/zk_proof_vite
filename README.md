@@ -14,9 +14,26 @@ template CompareNumber() {
     signal input a;
     signal input b;
     signal output c;
-    if( a == b ){
-        c = 0;
-    }else if( a > b ){
+
+    var Aflower = a / 13;
+    var AValue = a % 13;
+    var Bflower = b / 13;
+    var BValue = b % 13;
+
+    if( AValue == 0 )
+        AValue = 14;
+    if( BValue == 0 )
+        BValue = 14;
+    
+    if( AValue == BValue ){
+        if( Aflower == Bflower ){
+            c = 0;
+        }else if( Aflower > Bflower ){
+            c = 1;
+        }else{
+            c = 2;
+        }
+    }else if( AValue > BValue ){
         c = 1;
     }else{
         c = 2;
@@ -45,7 +62,7 @@ snarkjs plonk setup circuit.r1cs pot12_final.ptau circuit_final.zkey
 
 網站需要 .wasm && .zkey 2檔案
 
-#### 產出 verifier.sol 智能合約
+### 產出 verifier.sol 智能合約
 ```bash
 snarkjs zkey export solidityverifier circuit_final.zkey verifier.sol
 ```
@@ -53,15 +70,15 @@ snarkjs zkey export solidityverifier circuit_final.zkey verifier.sol
 我們也可以繼承這個合約並且加上自己想要的系統設計，成為一個可以驗證零知識證明的 Dapps！
 我們部署 Verifier.sol 即可
 
-#### command 手動驗証
+### command 手動驗証
 驗證需要 Verification Key（verification_key.json）、witness（proof.json）、Public Information（public.json） 三者
 
-##### Export verification key
+#### Export verification key
 ```bash
 snarkjs zkey export verificationkey circuit_final.zkey verification_key.json
 ```
 
-##### Calculate Witness
+#### Calculate Witness
 input.json
 ```json
 { "a": "3", "b" : "6" }
@@ -74,7 +91,7 @@ Witness 為隱私資訊，是不想漏漏的資料
 也有與 witness 相對應的公開資料，可視系統設計而定
 這一步會需要輸入值，以 input.json 的形式輸入
 
-##### Generate proof and public info
+#### Generate proof and public info
 ```bash
 snarkjs plonk prove circuit_final.zkey witness.wtns proof.json public.json
 ```
@@ -82,14 +99,14 @@ snarkjs plonk prove circuit_final.zkey witness.wtns proof.json public.json
 proof.json: 包含 zk-proof
 public.json: 包含 public 的 input 和 output
 
-##### Verify proof
+#### Verify proof
 ```bash
 snarkjs plonk verify verification_key.json public.json proof.json
 ```
 驗證需要 Verification Key（verification_key.json）、witness（proof.json）、Public Information（public.json） 三者
 如果 Proof 是合法的，我們可以看見 command 會輸出結果 OK
 一個合法的結果不只是我們知道符合電路的 signal 組合，也證明了 public 的 input 和 output 跟 public.json 檔案中的定義相符
-##### Generate calldata
+#### Generate calldata
 ```bash
 snarkjs zkey export soliditycalldata public.json proof.json
 ```
@@ -108,6 +125,10 @@ snarkjs powersoftau contribute pot12_0000.ptau pot12_0001.ptau --name="First con
 snarkjs powersoftau prepare phase2 pot12_0001.ptau pot12_final.ptau -v
 ```
 
+## ！注意！ 部署 smart contract
+在研發 或 部署 verifier.sol ...建議事項
+建議 verifier.sol 跟 主合約(ZKPVerifier.sol) 分開部署然後 verifier.sol 用 interface 的方式，跟主合約互動，盡量不要用 is 繼承。
+因為在 verifier.sol 的 function verifyProof 最後會回傳 true or false，但內容是用 assembly 的 return(0,0x20)，這樣會導致剩下的程式碼不會執行，直接回傳 true or false。而且如果已有寫入slot的資料，並不會因require 等於 false 而回復, 而導致資料錯誤。 
 
 ## Installation
 
