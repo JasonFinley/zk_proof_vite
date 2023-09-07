@@ -147,3 +147,12 @@ Start the server
 ```bash
 npm run dev
 ```
+
+#### snarkjs cdn
+```javascript
+<script src="https://cdn.jsdelivr.net/npm/snarkjs@0.7.0/build/snarkjs.min.js" ></script>
+```
+add app code
+```javascript
+const snarkjs = window.snarkjs;
+```
