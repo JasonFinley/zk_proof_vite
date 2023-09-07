@@ -1,4 +1,5 @@
-import { ConnectWallet, useContract } from "@thirdweb-dev/react";
+import { ConnectWallet, useContract, useChainId, useSwitchChain } from "@thirdweb-dev/react";
+import { Sepolia } from "@thirdweb-dev/chains";
 import "./styles/Home.css";
 import { useEffect, useState } from "react";
 import { ZKPCompareNumbers } from "./ZKPCompareNumbers";
@@ -8,6 +9,8 @@ const contractABI = [{"inputs":[{"internalType":"address","name":"verifier","typ
 
 export default function Home() {
 
+  const chainId = useChainId();
+  const switchChain = useSwitchChain();
   const { contract } = useContract( contractAddress, contractABI );
 
   const strFlowers = [ "梅花", "鑽石", "愛心", "黑桃" ];
@@ -71,7 +74,19 @@ export default function Home() {
       pokerBuf.push( i );
     }
     setBasePoker( FisherYatesShuffle( pokerBuf ) );
+
   }, [] );
+
+  useEffect( () => {
+
+    //console.log( chainId );
+    if( !chainId )
+      return;
+
+    if( chainId != Sepolia.chainId )
+      switchChain( Sepolia.chainId );
+
+  }, [chainId] );
 
   return (
     <div>
