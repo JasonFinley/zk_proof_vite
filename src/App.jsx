@@ -41,6 +41,7 @@ export default function Home() {
   }
 
   const handleNewGame = () => {
+    console.log( " @@@ handleNewGame @@@" );
     setBasePoker( ( pre ) => {
       const newRand = [...pre];
       return FisherYatesShuffle( newRand );
@@ -89,11 +90,12 @@ export default function Home() {
         if( value == arrayNumbers[j] % 13 ){
           cnt += 1;
         }
+
+        if( cnt >= 3 )
+          return arrayNumbers[j];
         
       }
 
-      if( cnt >= 3 )
-        return arrayNumbers[i];
     }
 
     return -1;
@@ -112,10 +114,11 @@ export default function Home() {
           cnt += 1;
         }
 
+        if( cnt >= 3 )
+          return arrayNumbers[j];
+
       }
 
-      if( cnt >= 3 )
-        return arrayNumbers[i];
     }
 
     return -1;
@@ -134,10 +137,11 @@ export default function Home() {
           cnt += 1;
         }
 
+        if( cnt >= 2 )
+          return arrayNumbers[j];
+
       }
 
-      if( cnt >= 2 )
-        return arrayNumbers[i];
     }
 
     return -1;
@@ -159,12 +163,16 @@ export default function Home() {
           cnt += 1;
         }
 
+        if( cnt >= 2 ){
+          pair01 = arrayNumbers[j];
+          break;
+        }
+
       }
 
-      if( cnt >= 2 ){
-        pair01 = arrayNumbers[i];
+      if( cnt >= 2 )
         break;
-      }
+
     }
 
     for( let i = 0 ; i < arrayNumbers.length ; i++ )
@@ -178,12 +186,17 @@ export default function Home() {
             cnt += 1;
           }
         }
+
+        if( cnt >= 2 ){
+          pair02 = arrayNumbers[j];
+          break;
+        }
+
       }
 
-      if( cnt >= 2 ){
-        pair02 = arrayNumbers[i];
+      if( cnt >= 2 )
         break;
-      }
+
     }
 
     if( pair01 % 13 > pair02 % 13 ){
@@ -205,7 +218,7 @@ export default function Home() {
       if( Math.floor( baseV / 13 ) != v )
         return -1;
       
-        baseV = arrayNumbers[i];
+      baseV = arrayNumbers[i];
     }
 
     return baseV;
