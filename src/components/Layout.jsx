@@ -1,7 +1,23 @@
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectWallet, useChainId, useSwitchChain } from "@thirdweb-dev/react";
+import { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 const Layout = () => {
+
+    const chainId = useChainId();
+    const switchChain = useSwitchChain();
+
+    useEffect( () => {
+
+        //console.log( chainId );
+        if( !chainId )
+            return;
+    
+        if( chainId != Sepolia.chainId )
+            switchChain( Sepolia.chainId );
+    
+    }, [chainId] );
+
     return (
         <div>
             <div style={{ textAlign: "center" }}><h1>簡易發牌比大小 with ZK-proof </h1></div>

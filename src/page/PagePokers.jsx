@@ -1,15 +1,12 @@
-import { ConnectWallet, useContract, useChainId, useSwitchChain } from "@thirdweb-dev/react";
-import { Sepolia } from "@thirdweb-dev/chains";
+import { useContract } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
-import { ZKPCompareNumbers } from "../ZKPCompareNumbers";
+import { ZKPComparePokers } from "../ZKPComparePokers";
 
 const contractAddress = "0xA519A3A8e37C5f542AA3c3Ad73A9c8E879Ac63FF";
 const contractABI = [{"inputs":[{"internalType":"address","name":"verifier","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"caller","type":"address"},{"indexed":false,"internalType":"uint256","name":"compare","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"pokersA","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"pokersB","type":"uint256"}],"name":"ComparePoker","type":"event"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"_games","outputs":[{"internalType":"uint256","name":"startIdxPokerA","type":"uint256"},{"internalType":"uint256","name":"startIdxPokerB","type":"uint256"},{"internalType":"uint64","name":"winner","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"_pokersA","outputs":[{"internalType":"uint8","name":"value","type":"uint8"},{"internalType":"uint8","name":"flower","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"_pokersB","outputs":[{"internalType":"uint8","name":"value","type":"uint8"},{"internalType":"uint8","name":"flower","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_total_supply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"idx","type":"uint256"}],"name":"getPokersA","outputs":[{"components":[{"internalType":"uint8","name":"value","type":"uint8"},{"internalType":"uint8","name":"flower","type":"uint8"}],"internalType":"struct PokersCompareVerifier.Poker[5]","name":"","type":"tuple[5]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"idx","type":"uint256"}],"name":"getPokersB","outputs":[{"components":[{"internalType":"uint8","name":"value","type":"uint8"},{"internalType":"uint8","name":"flower","type":"uint8"}],"internalType":"struct PokersCompareVerifier.Poker[5]","name":"","type":"tuple[5]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256[24]","name":"_proof","type":"uint256[24]"},{"internalType":"uint256[11]","name":"_pubSignals","type":"uint256[11]"}],"name":"pokerVerifier","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
 
 export default function PagePokers() {
 
-  const chainId = useChainId();
-  const switchChain = useSwitchChain();
   const { contract } = useContract( contractAddress, contractABI );
 
   const [ cardPlayer01, setCardPlayer01 ] = useState([]);
@@ -49,11 +46,12 @@ export default function PagePokers() {
 
   const solidityVerifier = async ( numberA, numberB ) => {
     try {
-      const calldata = await ZKPCompareNumbers( numberA, numberB );
-      const data = await contract.call("pokerVerifier", [ calldata.BN_proofs, calldata.BN_signals ], 
-      {
-          gasLimit: 1000000,
-      });
+      const calldata = await ZKPComparePokers( numberA, numberB );
+      console.log( calldata );
+      // const data = await contract.call("pokerVerifier", [ calldata.BN_proofs, calldata.BN_signals ], 
+      // {
+      //     gasLimit: 1000000,
+      // });
 
       //以下比較好的做法是去看 Transaction Hash
       const winValue = calldata.BN_signals[0].toNumber();
@@ -73,7 +71,7 @@ export default function PagePokers() {
   }
 
   const handleVerify = () => {
-    solidityVerifier( basePoker[0], basePoker[1] );
+    solidityVerifier( cardPlayer01, cardPlayer02 );
   }
 
   const getFullHouse = ( arrayNumbers ) => {
@@ -422,17 +420,6 @@ export default function PagePokers() {
 
   }, [ basePoker ] );
 
-  useEffect( () => {
-
-    //console.log( chainId );
-    if( !chainId )
-      return;
-
-    if( chainId != Sepolia.chainId )
-      switchChain( Sepolia.chainId );
-
-  }, [chainId] );
-
   return (
     <div>
       <div style={{fontSize: "20px", textAlign: "center", margin: "4px"}}>
@@ -481,8 +468,6 @@ export default function PagePokers() {
               } )
             }
             </div>
-            {/* <p>{ strNumbers[ basePoker[1] % strNumbers.length ] }</p>
-            <p>{ strFlowers[ Math.floor(basePoker[1] / strNumbers.length) ] }</p> */}
           </div>
           <h4>{ `${ strNumbers[cardTypePlayer02.value % 13] } ${ strFlowers[Math.floor(cardTypePlayer02.value / 13)] } ${cardTypePlayer02.type}` }</h4>
         </div>

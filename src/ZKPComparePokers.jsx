@@ -21,16 +21,27 @@ const parseStringToBigNumbers = ( strBuffer ) => {
     return BN_Buffer;
 }
 
-export const ZKPComparePokers = async ( numberA, numberB ) => {
+export const ZKPComparePokers = async ( pokersA, pokersB ) => {
 
-    // const {proof, publicSignals} = await snarkjs.plonk.fullProve({ a: numberA, b: numberB }, WASM, ZKEY);
-    // const solidityBuffer = await snarkjs.plonk.exportSolidityCallData( proof, publicSignals );
-    // let sIdx = solidityBuffer.indexOf( "[" );
-    // let eIdx = solidityBuffer.indexOf( "]", sIdx + 1 );
-    // const BN_proofs = parseStringToBigNumbers( solidityBuffer.substring( sIdx, eIdx + 1 ) );
-    // sIdx = solidityBuffer.indexOf( "[", eIdx + 1 );
-    // eIdx = solidityBuffer.indexOf( "]", sIdx + 1 );
-    // const BN_signals = parseStringToBigNumbers( solidityBuffer.substring( sIdx, eIdx + 1) );
+    const zkpInput = {
+        a: [ ...pokersA ],
+        b: [ ...pokersB ]
+    };
+
+    if( zkpInput.a.length != zkpInput.b.length ){
+        return { BN_proofs : null, BN_signals: null }
+    }
+
+    console.log( "snarkjs.plonk.fullProve load file maybe too slow..... ;_; ", zkpInput );
+    const {proof, publicSignals} = await snarkjs.plonk.fullProve( zkpInput , WASM, ZKEY);
+    console.log( "byPass Goooooood !!! ", proof, publicSignals );
+    const solidityBuffer = await snarkjs.plonk.exportSolidityCallData( proof, publicSignals );
+    let sIdx = solidityBuffer.indexOf( "[" );
+    let eIdx = solidityBuffer.indexOf( "]", sIdx + 1 );
+    const BN_proofs = parseStringToBigNumbers( solidityBuffer.substring( sIdx, eIdx + 1 ) );
+    sIdx = solidityBuffer.indexOf( "[", eIdx + 1 );
+    eIdx = solidityBuffer.indexOf( "]", sIdx + 1 );
+    const BN_signals = parseStringToBigNumbers( solidityBuffer.substring( sIdx, eIdx + 1) );
 
     return {
         BN_proofs : BN_proofs,
