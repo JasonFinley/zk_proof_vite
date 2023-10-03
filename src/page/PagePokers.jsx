@@ -47,11 +47,11 @@ export default function PagePokers() {
   const solidityVerifier = async ( numberA, numberB ) => {
     try {
       const calldata = await ZKPComparePokers( numberA, numberB );
-      console.log( calldata );
-      // const data = await contract.call("pokerVerifier", [ calldata.BN_proofs, calldata.BN_signals ], 
-      // {
-      //     gasLimit: 1000000,
-      // });
+      //console.log( calldata );
+      const data = await contract.call("pokerVerifier", [ calldata.BN_proofs, calldata.BN_signals ], 
+      {
+          gasLimit: 1000000,
+      });
 
       //以下比較好的做法是去看 Transaction Hash
       const winValue = calldata.BN_signals[0].toNumber();
