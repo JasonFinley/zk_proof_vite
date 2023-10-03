@@ -131,8 +131,9 @@ template Flush(){
     var baseV = numbers[0];
     for( var i = 1 ; i < 5 ; i++ )
     {
-      var v = numbers[i] / 13;
-      if( (baseV / 13) == v && res == 9999 ){
+      var v = numbers[i] \ 13;
+      var bv = baseV \ 13;
+      if( bv == v && res == 9999 ){
         baseV = numbers[i];
       }else{
         res = 9998;
@@ -172,6 +173,33 @@ template Straight(){
     }else{
         out <== lastV;
     }
+}
+
+function highNumber( a, b, c, d, e ){
+
+    var x[5] = [ a, b, c, d, e ];
+
+    var maxV = x[0];
+    for( var i = 1 ; i < 5 ; i++ )
+    {
+        var v = x[i] % 13;
+        var f = x[i] \ 13;
+        var cv = maxV % 13;
+        var cf = maxV \ 13;
+
+        if( v == 0 ) v = 14;
+        if( cv == 0 ) cv = 14;
+
+        if( cv < v ){
+            maxV = x[i];
+        }else if( cv == v ){
+            if( cf < f ){
+                maxV = x[i];
+            }
+        }
+    }
+
+    return maxV;
 }
 
 template CheckNumbers(){
@@ -267,49 +295,12 @@ template CheckNumbers(){
             returnOut = 4 * 1000 + resStraight;
         }else{
 
-            var lastV = numbers[0];
-            for( i = 1 ; i < 5 ; i++ )
-            {
-                var v = (lastV % 13);
-                var curV = (numbers[i] % 13);
-                if( curV == v ){
-
-                    if( numbers[i] > lastV ){
-                        lastV = numbers[i];
-                    }
-
-                }else{
-
-                    if( v == 0 || curV == 0 ){
-
-                        if( curV == 0 ){
-                            lastV = numbers[i];
-                        }
-                    
-                    }else if( curV > v){
-                        lastV = numbers[i];
-                    }
-
-                }
-
-            }
-
-            returnOut = 0 * 1000 + lastV;
+            var high = highNumber( numbers[0], numbers[1], numbers[2], numbers[3], numbers[4] );
+            returnOut = 0 * 1000 + high;
         }
     }
 
     out <== returnOut;
-}
-
-template finishPokers(){
-    signal input typeA;
-    signal input typeB;
-    signal input valueA;
-    signal input valueB;
-    signal output out;
-
-
-    out <== 1;
 }
 
 template ComparePokers() {
@@ -317,31 +308,52 @@ template ComparePokers() {
     signal input b[5];
     signal output c;
 
-    var typeA = 0;
-    var typeB = 0;
-    var resA = 0;
-    var resB = 0;
-
-    component valueA = CheckNumbers();
-    component valueB = CheckNumbers();
+    component pokersA = CheckNumbers();
+    component pokersB = CheckNumbers();
     for( var i = 0 ; i < 5 ; i++ )
     {
-        valueA.numbers[i] <== a[i];
-        valueB.numbers[i] <== b[i];
+        pokersA.numbers[i] <== a[i];
+        pokersB.numbers[i] <== b[i];
     }
 
-    typeA = valueA.out / 1000;
-    resA = valueA.out % 1000;
-    typeB = valueB.out / 1000;
-    resB = valueB.out % 1000;
+    var vA = pokersA.out;
+    var vB = pokersB.out;
+    var res = 0;
+    var typeA = vA \ 1000;
+    var typeB = vB \ 1000;
+    var valueA = vA % 1000;
+    var valueB = vB % 1000;
 
-    component finish = finishPokers();
-    finish.typeA <== typeA;
-    finish.typeB <== typeB;
-    finish.valueA <== resA;
-    finish.valueB <== resB;
+    if( typeA > typeB ){
+        res = 1;
+    }else if( typeB > typeA ){
+        res = 2;
+    }else{
 
-    c <== finish.out;
+        var nA = valueA % 13;
+        var nB = valueB % 13;
+        var fA = valueA \ 13;
+        var fB = valueB \ 13;
+        
+        if( nA == 0 ) nA = 14;
+        if( nB == 0 ) nB = 14;
+
+        if( nA > nB ){
+            res = 1;
+        }else if( nB > nA ){
+            res = 2;
+        }else if( fA > fB ){
+            res = 1;
+        }else if( fB > fA ){
+            res = 2;
+        }else{
+            res = 3;
+        }
+
+    }
+
+    c <== res;
+    
  }
 
  component main = ComparePokers();
