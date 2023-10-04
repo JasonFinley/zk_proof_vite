@@ -1,125 +1,171 @@
-template FullHouse(){
-    signal input numbers[5];
-    signal output out;
+function FullHouse( a, b, c, d, e ){
+    var x[5] = [ a, b, c, d, e];
     var res = 9999;
 
     for( var i = 0 ; i < 5 ; i++ )
     {
-      var value = numbers[i] % 13;
+      var value = x[i] % 13;
       var cnt = 0;
       for( var j = 0 ; j < 5 ; j++ )
       {
 
-        if( value == numbers[j] % 13 ){
+        if( value == x[j] % 13 ){
           cnt += 1;
         }
 
         if( cnt >= 3 ){
-            res = numbers[j];
+            res = x[j];
+            j += 5;
+            i += 5;
         }
         
       }
 
     }
 
-    out <== res;
+    return res;
 }
 
-template Three(){
-    signal input numbers[5];
-    signal output out;
+function Four( a, b, c, d, e ){
+    var x[5] = [ a, b, c, d, e ];
     var res = 9999;
 
     for( var i = 0 ; i < 5 ; i++ )
     {
-      var value = numbers[i] % 13;
+      var value = x[i] % 13;
       var cnt = 0;
       for( var j = 0 ; j < 5 ; j++ )
       {
 
-        if( value == numbers[j] % 13 ){
+        if( value == x[j] % 13 ){
+          cnt += 1;
+        }
+
+        if( cnt >= 4 ){
+          res = x[j];
+          j += 5;
+          i += 5;
+        }
+
+      }
+
+    }
+
+    return res;
+}
+
+function Three( a, b, c, d, e ){
+    var x[5] = [ a, b, c, d, e ];
+    var res = 9999;
+
+    for( var i = 0 ; i < 5 ; i++ )
+    {
+      var value = x[i] % 13;
+      var cnt = 0;
+      for( var j = 0 ; j < 5 ; j++ )
+      {
+
+        if( value == x[j] % 13 ){
           cnt += 1;
         }
 
         if( cnt >= 3 ){
-          res = numbers[j];
+          res = x[j];
+          j += 5;
+          i += 5;
         }
 
       }
 
     }
 
-    out <== res;
+    return res;
 }
 
-template Pair(){
-    signal input numbers[5];
-    signal output out;
+function Pair( a, b, c, d, e ){
+    var x[5] = [ a, b, c, d, e ];
     var res = 9999;
 
     for( var i = 0 ; i < 5 ; i++ )
     {
-      var value = numbers[i] % 13;
-      var cnt = 0;
-      for( var j = 0 ; j < 5 ; j++ )
-      {
+        var value = x[i] % 13;
+        var cnt = 0;
+        for( var j = 0 ; j < 5 ; j++ )
+        {
 
-        if( value == numbers[j] % 13 ){
-          cnt += 1;
+            if( value == x[j] % 13 ){
+                cnt += 1;
+            }
+
+            if( cnt >= 2 ){
+                res = x[j];
+                j += 5;
+                i += 5;
+            }
+
         }
-
-        if( cnt >= 2 ){
-            res = numbers[j];
-        }
-
-      }
-
     }
 
-    out <== res;
+    return res;
 }
 
-template TwoPair(){
-    signal input numbers[5];
-    signal output out;
+function TwoPair( a, b, c, d, e ){
+    var x[5] = [ a, b, c, d, e ];
+    var res;
 
     var pair01 = 9999;
     var pair02 = 9999;
 
     for( var i = 0 ; i < 5 ; i++ )
     {
-        var value = numbers[i] % 13;
+        var value = x[i] % 13;
         var cnt = 0;
 
         for( var j = 0 ; j < 5 ; j++ )
         {
 
-            if( value == numbers[j] % 13 ){
+            if( value == x[j] % 13 ){
                 cnt += 1;
             }
 
             if( cnt >= 2 ){
-                if( pair01 == 9999 )
-                    pair01 = numbers[j];
-                else
-                    pair02 = numbers[j];
+
+                if( pair01 == 9999 ){
+                    pair01 = x[j];
+                    j += 5;
+                }else if( pair02 == 9999 ){
+                    pair02 = x[j];
+                    j += 5;
+                }
+
+                if( pair02 != 9999 && pair01 % 13 == pair02 % 13 ){
+                    pair02 = 9999;
+                    j += 5;
+                }
+
             }
 
+        }
+
+        if( pair01 != 9999 && pair02 != 9999 && pair01 % 13 != pair02 % 13 ){
+            i += 5;
         }
 
     }
 
     if( pair01 == 9999 || pair02 == 9999 ){
-        out <== 9999;
+        res = 9999;
     }else{
 
         if( pair01 % 13 > pair02 % 13 ){
-            out <== pair01;
+            res = pair01;
         }else{
-            out <== pair02;
+            res = pair02;
         }
 
     }
+
+    return res;
 
 }
 
@@ -131,21 +177,19 @@ template Flush(){
     var baseV = numbers[0];
     for( var i = 1 ; i < 5 ; i++ )
     {
-      var v = numbers[i] \ 13;
-      var bv = baseV \ 13;
-      if( bv == v && res == 9999 ){
-        baseV = numbers[i];
-      }else{
-        res = 9998;
-      }
+        var v = numbers[i] \ 13;
+        var bv = baseV \ 13;
+        if( bv == v ){
+            baseV = numbers[i];
+            res = baseV;
+        }else{
+            res = 9999;
+            i += 5;
+        }
         
     }
 
-    if( res == 9998 ){
-        out <== 9999;
-    }else{
-        out <== baseV;
-    }
+    out <== res;
 
 }
 
@@ -229,48 +273,47 @@ template CheckNumbers(){
     for( i = 0 ; i < 13 ; i++ )
     {
         if( valueCount[i] >= 4 ){
-            returnOut = 1000 * 6 + valueCount[i];
+            res = 7;
         }else{
             if( valueCount[i] >= 2 ){
                 res *= valueCount[i];
             }
         }
     }
-
+    //log( res );
     if( res > 1 ){
         // 對子類
 
-        component valueFullHouse = FullHouse();
-        component valueThree = Three();
-        component valuePair = Pair();
-        component valueTwoPair = TwoPair();
-        for( i = 0 ; i < 5 ; i++ )
-        {
-            valueFullHouse.numbers[i] <== numbers[i];
-            valueThree.numbers[i] <== numbers[i];
-            valuePair.numbers[i] <== numbers[i];
-            valueTwoPair.numbers[i] <== numbers[i];
-        }
-
         if( res == 6 ){//葫蘆
 
-            returnOut = 6 * 1000 + valueFullHouse.out;
+            var tmp = FullHouse( numbers[0], numbers[1], numbers[2], numbers[3], numbers[4] );
+            returnOut = 6 * 1000 + tmp;
 
         }else if( res == 3 ){//三條
 
-            returnOut = 3 * 1000 + valueThree.out;
+            var tmp = Three( numbers[0], numbers[1], numbers[2], numbers[3], numbers[4] );
+            returnOut = 3 * 1000 + tmp;
 
         }else if( res == 2 ){//對子
 
-            returnOut = 1 * 1000 + valuePair.out;
+            var tmp = Pair( numbers[0], numbers[1], numbers[2], numbers[3], numbers[4] );
+            returnOut = 1 * 1000 + tmp;
 
         }else if( res == 4 ){//兩對
 
-            returnOut = 2 * 1000 + valueTwoPair.out;
+            var tmp = TwoPair( numbers[0], numbers[1], numbers[2], numbers[3], numbers[4] );
+            returnOut = 2 * 1000 + tmp;
+
+        }else if( res == 7 ){//鐵支
+
+            var tmp = Four( numbers[0], numbers[1], numbers[2], numbers[3], numbers[4] );
+            returnOut = 7 * 1000 + tmp;
 
         }else{
             returnOut = 9999;
         }
+
+        //log( returnOut );
 
     }else{
 

@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 
 //理論這2檔要在後端
+//const WASM = "/public/circom/circuit.wasm";
+//const ZKEY = "/public/circom/circuit_final.zkey";
 const WASM = "/public/circom/pokers.wasm";
 const ZKEY = "/public/circom/pokers_final.zkey";
 
@@ -32,9 +34,7 @@ export const ZKPComparePokers = async ( pokersA, pokersB ) => {
         return { BN_proofs : null, BN_signals: null }
     }
 
-    console.log( "snarkjs.plonk.fullProve load file maybe too slow..... ;_; ", zkpInput );
     const {proof, publicSignals} = await snarkjs.plonk.fullProve( zkpInput , WASM, ZKEY);
-    console.log( "byPass Goooooood !!! ", proof, publicSignals );
     const solidityBuffer = await snarkjs.plonk.exportSolidityCallData( proof, publicSignals );
     let sIdx = solidityBuffer.indexOf( "[" );
     let eIdx = solidityBuffer.indexOf( "]", sIdx + 1 );

@@ -393,17 +393,17 @@ export default function PagePokers() {
       }
     }
 
-    // player01.push( 7 );
-    // player01.push( 14 );
+    // player01.push( 17 );
+    // player01.push( 18 );
+    // player01.push( 19 );
+    // player01.push( 20 );
     // player01.push( 21 );
-    // player01.push( 28 );
-    // player01.push( 35 );
 
+    // player02.push( 4 );
+    // player02.push( 6 );
+    // player02.push( 7 );
+    // player02.push( 9 );
     // player02.push( 10 );
-    // player02.push( 20 );
-    // player02.push( 30 );
-    // player02.push( 40 );
-    // player02.push( 50 );
 
     const sortPlayer01 = player01.sort( (a, b) => { return a - b } );
     const sortPlayer02 = player02.sort( (a, b) => { return a - b } );
