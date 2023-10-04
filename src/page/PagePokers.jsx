@@ -1,4 +1,4 @@
-import { useContract } from "@thirdweb-dev/react";
+import { useContract, useAddress } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
 import { ZKPComparePokers } from "../ZKPComparePokers";
 
@@ -7,6 +7,7 @@ const contractABI = [{"inputs":[{"internalType":"address","name":"verifier","typ
 
 export default function PagePokers() {
 
+  const walletAddress = useAddress();
   const { contract } = useContract( contractAddress, contractABI );
 
   const [ cardPlayer01, setCardPlayer01 ] = useState([]);
@@ -71,6 +72,12 @@ export default function PagePokers() {
   }
 
   const handleVerify = () => {
+
+    if( walletAddress == null || walletAddress == undefined ){
+      alert("Please Connect Wallet!!")
+      return;
+    }
+
     solidityVerifier( cardPlayer01, cardPlayer02 );
   }
 

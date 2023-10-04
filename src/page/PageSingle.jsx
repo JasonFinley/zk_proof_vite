@@ -1,4 +1,4 @@
-import { useContract } from "@thirdweb-dev/react";
+import { useContract, useAddress } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
 import { ZKPCompareNumbers } from "./../ZKPCompareNumbers";
 
@@ -7,6 +7,7 @@ const contractABI = [{"inputs":[{"internalType":"address","name":"verifier","typ
 
 const PageSingle = () => {
 
+  const walletAddress = useAddress();
   const { contract } = useContract( contractAddress, contractABI );
 
   const strFlowers = [ "梅花", "鑽石", "愛心", "黑桃" ];
@@ -59,6 +60,12 @@ const PageSingle = () => {
   }
 
   const handleVerify = () => {
+    
+    if( walletAddress == null || walletAddress == undefined ){
+      alert("Please Connect Wallet!!")
+      return;
+    }
+
     solidityVerifier( basePoker[0], basePoker[1] );
   }
 

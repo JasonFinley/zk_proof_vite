@@ -1,6 +1,7 @@
 import { ConnectWallet, useChainId, useSwitchChain } from "@thirdweb-dev/react";
 import { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import {Sepolia} from "@thirdweb-dev/chains";
 
 const Layout = () => {
 
